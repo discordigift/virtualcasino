@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEON ROYALE // Free-to-Play Arcade & Virtual Casino</title>
+  <style>
+    :root {
+      --bg-dark: #090a10;
+      --bg-panel: #121524;
+      --bg-card: #191d32;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff007f;
+      --neon-purple: #9d00ff;
+      --neon-gold: #ffd700;
+      --neon-green: #00ff88;
+      --text-main: #f0f4ff;
+      --text-muted: #8b95b5;
+      --border-glow: rgba(0, 243, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(157, 0, 255, 0.14), transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(0, 243, 255, 0.12), transparent 35%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Disclaimer Banner */
+    .f2p-banner {
+      background: linear-gradient(90deg, #1b1035, #0e2438);
+      border-bottom: 1px solid var(--border-glow);
+      text-align: center;
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      color: var(--neon-cyan);
+      letter-spacing: 0.5px;
+    }
+
+    /* Header / Gamification Bar */
+    header {
+      background: rgba(18, 21, 36, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hud-stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stat-pill {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .stat-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .coins-val {
+      color: var(--neon-gold);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+    }
+
+    .xp-container {
+      width: 120px;
+    }
+
+    .xp-bar-bg {
+      width: 100%;
+      height: 7px;
+      background: #0b0d17;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      transition: width 0.35s ease;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      transition: all 0.18s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-bonus {
+      background: linear-gradient(135deg, var(--neon-gold), #ff9900);
+      color: #111;
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+    }
+
+    .btn-bonus:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+
+    .btn-icon {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 9px 12px;
+      font-size: 0.9rem;
+    }
+
+    /* Main Grid Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 22px;
+      max-width: 1320px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    @media (max-width: 960px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Game Selector Tabs */
+    .game-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--bg-panel);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 243, 255, 0.18), rgba(157, 0, 255, 0.18));
+      color: var(--text-main);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px rgba(0, 243, 255, 0.2);
+    }
+
+    /* Game Stage Panel */
+    .stage-card {
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    }
+
+    .game-panel {
+      display: none;
+    }
+
+    .game-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .game-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .game-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Controls Bar */
+    .bet-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      padding: 14px 18px;
+      border-radius: 14px;
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .bet-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bet-input-group input {
+      width: 100px;
+      background: #0c0e18;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--neon-gold);
+      font-weight: 700;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .chip-btn {
+      background: #232844;
+      color: var(--text-main);
+      padding: 8px 11px;
+      font-size: 0.8rem;
+    }
+
+    .chip-btn:hover {
+      background: #2f365c;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-cyan), #0099ff);
+      color: #050811;
+      padding: 12px 26px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 18px rgba(0, 243, 255, 0.35);
+      margin-left: auto;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--neon-pink), #ff4d4d);
+      color: #fff;
+      padding: 12px 26px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 18px rgba(255, 0, 127, 0.4);
+      margin-left: auto;
+    }
+
+    .status-banner {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      font-weight: 600;
+      text-align: center;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-win {
+      background: rgba(0, 255, 136, 0.14);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      color: var(--neon-green);
+    }
+
+    .status-loss {
+      background: rgba(255, 0, 127, 0.14);
+      border: 1px solid rgba(255, 0, 127, 0.35);
+      color: #ff6b9d;
+    }
+
+    /* ================= SLOTS STYLING ================= */
+    .slots-machine {
+      background: linear-gradient(180deg, #0d101d, #161b30);
+      border: 2px solid var(--neon-purple);
+      border-radius: 16px;
+      padding: 28px 20px;
+      box-shadow: inset 0 0 30px rgba(157, 0, 255, 0.25);
+    }
+
+    .reels-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    .reel-box {
+      background: #080a12;
+      border: 2px solid rgba(0, 243, 255, 0.35);
+      border-radius: 14px;
+      height: 125px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.6rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      user-select: none;
+    }
+
+    .reel-box.spinning {
+      animation: reelPulse 0.12s infinite alternate;
+      border-color: var(--neon-pink);
+    }
+
+    @keyframes reelPulse {
+      from { transform: translateY(-3px); }
+      to { transform: translateY(3px); }
+    }
+
+    .paytable {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .paytable span {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    /* ================= CYBER CRASH STYLING ================= */
+    .crash-arena {
+      position: relative;
+      height: 260px;
+      background: radial-gradient(circle at bottom left, rgba(0, 243, 255, 0.14), #080a12 70%);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .crash-multiplier {
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 25px rgba(0, 243, 255, 0.55);
+      z-index: 2;
+    }
+
+    .crash-multiplier.crashed {
+      color: var(--neon-pink);
+      text-shadow: 0 0 25px rgba(255, 0, 127, 0.65);
+    }
+
+    .crash-multiplier.cashed {
+      color: var(--neon-green);
+      text-shadow: 0 0 25px rgba(0, 255, 136, 0.65);
+    }
+
+    .rocket-icon {
+      font-size: 2.4rem;
+      margin-bottom: 6px;
+      transition: transform 0.1s linear;
+    }
+
+    .crash-history {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .history-badge {
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .hist-low { background: rgba(255, 0, 127, 0.2); color: #ff7aa8; }
+    .hist-high { background: rgba(0, 255, 136, 0.2); color: var(--neon-green); }
+
+    /* ================= HIGH-LOW DECK STYLING ================= */
+    .hilo-arena {
+      background: #0b0e19;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .playing-card {
+      width: 120px;
+      height: 170px;
+      background: linear-gradient(145deg, #ffffff, #e6ecff);
+      color: #111;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      font-weight: 800;
+      font-size: 1.5rem;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .playing-card.red {
+      color: #d90429;
+    }
+
+    .card-center {
+      font-size: 2.8rem;
+      text-align: center;
+    }
+
+    .hilo-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-hilo {
+      background: var(--bg-card);
+      border: 1px solid var(--neon-cyan);
+      color: var(--text-main);
+      padding: 11px 22px;
+      font-size: 0.95rem;
+    }
+
+    .btn-hilo:hover:not(:disabled) {
+      background: rgba(0, 243, 255, 0.18);
+    }
+
+    /* ================= SIDEBAR (QUESTS & LEADERBOARD) ================= */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .side-card {
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .side-title {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+    }
+
+    .quest-item {
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .quest-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .quest-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .quest-progress-bar {
+      height: 5px;
+      background: #0b0d17;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .quest-progress-fill {
+      height: 100%;
+      background: var(--neon-green);
+      transition: width 0.3s ease;
+    }
+
+    .btn-claim {
+      width: 100%;
+      padding: 6px;
+      font-size: 0.78rem;
+      background: var(--neon-green);
+      color: #06120b;
+    }
+
+    .btn-claim.claimed {
+      background: #232844;
+      color: var(--text-muted);
+    }
+
+    .lb-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .lb-row.player-row {
+      background: rgba(0, 243, 255, 0.14);
+      border: 1px solid rgba(0, 243, 255, 0.4);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="f2p-banner">
+    🎮 FREE-TO-PLAY VIRTUAL ARCADE SIMULATION — Virtual Coins have zero real-world monetary value.
+  </div>
+
+  <header>
+    <div class="brand">⚡ NEON ROYALE</div>
+
+    <div class="hud-stats">
+      <div class="stat-pill">
+        <div>
+          <div class="stat-label">Virtual Balance</div>
+          <div class="stat-val coins-val" id="coinDisplay">1,000 🪙</div>
+        </div>
+      </div>
+
+      <div class="stat-pill">
+        <div class="xp-container">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="stat-label">Level <strong id="levelDisplay" style="color:#fff;">1</strong></span>
+            <span class="stat-label" id="xpText">0 / 100 XP</span>
+          </div>
+          <div class="xp-bar-bg">
+            <div class="xp-bar-fill" id="xpBarFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-pill">
+        <div>
+          <div class="stat-label">Win Streak</div>
+          <div class="stat-val" id="streakDisplay" style="color:var(--neon-pink);">0 🔥</div>
+        </div>
+      </div>
+
+      <button class="btn-bonus" id="dailyBonusBtn" onclick="claimBonus()">🎁 Claim +500 Coins</button>
+      <button class="btn-icon" id="soundToggleBtn" onclick="toggleSound()">🔊 SFX: ON</button>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <!-- Left Column: Mini-Games -->
+    <section>
+      <div class="game-tabs">
+        <button class="tab-btn active" onclick="switchTab('slots', this)">🎰 Neon Slots 777</button>
+        <button class="tab-btn" onclick="switchTab('crash', this)">🚀 Cyber Crash</button>
+        <button class="tab-btn" onclick="switchTab('hilo', this)">🃏 High-Low Deck</button>
+      </div>
+
+      <div class="stage-card">
+        <!-- GAME 1: NEON SLOTS -->
+        <div id="panel-slots" class="game-panel active">
+          <div class="game-header">
+            <div>
+              <div class="game-title">Neon Slots 777</div>
+              <div class="game-subtitle">Match 2 or 3 cyber symbols to multiply your wager and earn XP.</div>
+            </div>
+          </div>
+
+          <div class="slots-machine">
+            <div class="reels-row">
+              <div class="reel-box" id="reel0">💎</div>
+              <div class="reel-box" id="reel1">7️⃣</div>
+              <div class="reel-box" id="reel2">⚡</div>
+            </div>
+
+            <div class="paytable">
+              <span>7️⃣7️⃣7️⃣ = 15x</span>
+              <span>💎💎💎 = 8x</span>
+              <span>⚡⚡⚡ = 5x</span>
+              <span>🍒🍒🍒 = 3x</span>
+              <span>Any Pair = 1.5x</span>
+            </div>
+          </div>
+
+          <div class="bet-controls">
+            <div class="bet-input-group">
+              <span class="stat-label">Bet:</span>
+              <input type="number" id="slotsBet" value="50" min="10" step="10" />
+              <button class="chip-btn" onclick="adjustBet('slotsBet', 0.5)">½</button>
+              <button class="chip-btn" onclick="adjustBet('slotsBet', 2)">2x</button>
+              <button class="chip-btn" onclick="setMaxBet('slotsBet')">MAX</button>
+            </div>
+            <button class="btn-primary" id="spinBtn" onclick="playSlots()">Spin Reels</button>
+          </div>
+
+          <div class="status-banner" id="slotsStatus">Place your bet and spin the reels!</div>
+        </div>
+
+        <!-- GAME 2: CYBER CRASH -->
+        <div id="panel-crash" class="game-panel">
+          <div class="game-header">
+            <div>
+              <div class="game-title">Cyber Crash</div>
+              <div class="game-subtitle">Eject before the reactor overloads! Higher risk = bigger multiplier.</div>
+            </div>
+          </div>
+
+          <div class="crash-arena">
+            <div class="rocket-icon" id="rocketIcon">🚀</div>
+            <div class="crash-multiplier" id="crashMultDisplay">1.00x</div>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;" id="crashSubtext">Ready for launch</div>
+          </div>
+
+          <div class="crash-history" id="crashHistory"></div>
+
+          <div class="bet-controls">
+            <div class="bet-input-group">
+              <span class="stat-label">Bet:</span>
+              <input type="number" id="crashBet" value="50" min="10" step="10" />
+              <button class="chip-btn" onclick="adjustBet('crashBet', 0.5)">½</button>
+              <button class="chip-btn" onclick="adjustBet('crashBet', 2)">2x</button>
+            </div>
+            <div class="bet-input-group">
+              <span class="stat-label">Auto-Cashout:</span>
+              <input type="number" id="autoCashout" value="2.00" min="1.10" step="0.10" style="width:82px;" />
+            </div>
+            <button class="btn-primary" id="crashActionBtn" onclick="handleCrashAction()">Launch</button>
+          </div>
+
+          <div class="status-banner" id="crashStatus">Set your bet and launch the Cyber Rocket!</div>
+        </div>
+
+        <!-- GAME 3: HIGH-LOW DECK -->
+        <div id="panel-hilo" class="game-panel">
+          <div class="game-header">
+            <div>
+              <div class="game-title">High-Low Cyber Deck</div>
+              <div class="game-subtitle">Predict whether the next card is Higher or Lower. Chain wins to boost payout!</div>
+            </div>
+            <div class="stat-pill" style="padding:6px 12px;">
+              <span class="stat-label">Current Pot:</span>
+              <span class="stat-val coins-val" id="hiloPotDisplay">0 🪙</span>
+            </div>
+          </div>
+
+          <div class="hilo-arena">
+            <div class="playing-card" id="hiloCard">
+              <div id="cardTop">A♠</div>
+              <div class="card-center" id="cardCenter">♠</div>
+              <div id="cardBottom" style="text-align:right;">A♠</div>
+            </div>
+
+            <div class="hilo-actions">
+              <button class="btn-hilo" id="btnHigher" onclick="guessHiLo('higher')" disabled>⬆️ Higher or Equal</button>
+              <button class="btn-hilo" id="btnLower" onclick="guessHiLo('lower')" disabled>⬇️ Lower or Equal</button>
+              <button class="btn-bonus" id="btnHiloCashout" onclick="cashoutHiLo()" disabled>💰 Cashout Pot</button>
+            </div>
+          </div>
+
+          <div class="bet-controls">
+            <div class="bet-input-group">
+              <span class="stat-label">Entry Bet:</span>
+              <input type="number" id="hiloBet" value="50" min="10" step="10" />
+              <button class="chip-btn" onclick="adjustBet('hiloBet', 0.5)">½</button>
+              <button class="chip-btn" onclick="adjustBet('hiloBet', 2)">2x</button>
+            </div>
+            <button class="btn-primary" id="hiloStartBtn" onclick="startHiLo()">Deal Card</button>
+          </div>
+
+          <div class="status-banner" id="hiloStatus">Click "Deal Card" to start a High-Low streak!</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Quests & Leaderboard -->
+    <aside class="sidebar">
+      <div class="side-card">
+        <div class="side-title">
+          <span>🎯 Daily Quests</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Earn Extra Coins</span>
+        </div>
+        <div id="questsList"></div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-title">
+          <span>🏆 Arcade Leaderboard</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Live Rank</span>
+        </div>
+        <div id="leaderboardList"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // ================= STATE & GAMIFICATION =================
+    const state = {
+      coins: 1000,
+      xp: 0,
+      level: 1,
+      streak: 0,
+      totalWins: 0,
+      totalGames: 0,
+      maxSingleBet: 0,
+      soundOn: true,
+      bonusAvailable: true,
+      quests: [
+        { id: 'q1', title: 'First Victory', desc: 'Win 1 round in any mini-game', target: 1, progress: 0, reward: 250, claimed: false },
+        { id: 'q2', title: 'High Roller', desc: 'Place a single bet of 100+ Coins', target: 1, progress: 0, reward: 400, claimed: false },
+        { id: 'q3', title: 'Hot Streak', desc: 'Reach a 3-win streak', target: 3, progress: 0, reward: 600, claimed: false },
+        { id: 'q4', title: 'Neon Veteran', desc: 'Play 10 total rounds', target: 10, progress: 0, reward: 500, claimed: false }
+      ],
+      rivals: [
+        { name: 'CyberValkyrie', coins: 4200 },
+        { name: 'NeonDrifter', coins: 2650 },
+        { name: 'PixelAce', coins: 1450 },
+        { name: 'GlitchHunter', coins: 750 }
+      ]
+    };
+
+    // ================= WEB AUDIO SYNTHESIZER =================
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTone(freq, type = 'sine', duration = 0.12, volume = 0.08) {
+      if (!state.soundOn) return;
+      if (!audioCtx) audioCtx = new AudioCtx();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playWinSound() {
+      playTone(523.25, 'triangle', 0.12);
+      setTimeout(() => playTone(659.25, 'triangle', 0.12), 90);
+      setTimeout(() => playTone(783.99, 'triangle', 0.22), 180);
+    }
+
+    function playLoseSound() {
+      playTone(220, 'sawtooth', 0.18, 0.06);
+      setTimeout(() => playTone(165, 'sawtooth', 0.25, 0.06), 120);
+    }
+
+    function toggleSound() {
+      state.soundOn = !state.soundOn;
+      document.getElementById('soundToggleBtn').textContent = state.soundOn ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+    }
+
+    // ================= CORE HUD & PROGRESSION =================
+    function updateHUD() {
+      document.getElementById('coinDisplay').textContent = `${Math.floor(state.coins).toLocaleString()} 🪙`;
+      document.getElementById('levelDisplay').textContent = state.level;
+      const xpNeeded = state.level * 100;
+      document.getElementById('xpText').textContent = `${state.xp} / ${xpNeeded} XP`;
+      document.getElementById('xpBarFill').style.width = `${Math.min(100, (state.xp / xpNeeded) * 100)}%`;
+      document.getElementById('streakDisplay').textContent = `${state.streak} 🔥`;
+
+      // Enable emergency refill if coins drop below 50
+      const bonusBtn = document.getElementById('dailyBonusBtn');
+      if (state.coins < 50 && !state.bonusAvailable) {
+        bonusBtn.disabled = false;
+        bonusBtn.textContent = '🆘 Refill +300 Coins';
+      }
+
+      renderQuests();
+      renderLeaderboard();
+    }
+
+    function addXP(amount) {
+      state.xp += amount;
+      let xpNeeded = state.level * 100;
+      while (state.xp >= xpNeeded) {
+        state.xp -= xpNeeded;
+        state.level++;
+        state.coins += 200; // Level up reward
+        xpNeeded = state.level * 100;
+        playWinSound();
+      }
+    }
+
+    function recordRound({ bet, won, payout = 0 }) {
+      state.totalGames++;
+      if (bet >= 100) state.maxSingleBet = Math.max(state.maxSingleBet, bet);
+
+      if (won) {
+        state.coins += payout;
+        state.totalWins++;
+        state.streak++;
+        addXP(25 + Math.floor(bet / 10));
+        playWinSound();
+      } else {
+        state.streak = 0;
+        addXP(10); // Participation XP
+        playLoseSound();
+      }
+
+      // Update Quests
+      state.quests.forEach(q => {
+        if (q.id === 'q1') q.progress = Math.min(q.target, state.totalWins);
+        if (q.id === 'q2') q.progress = state.maxSingleBet >= 100 ? 1 : 0;
+        if (q.id === 'q3') q.progress = Math.min(q.target, Math.max(q.progress, state.streak));
+        if (q.id === 'q4') q.progress = Math.min(q.target, state.totalGames);
+      });
+
+      updateHUD();
+    }
+
+    function claimBonus() {
+      if (state.bonusAvailable) {
+        state.coins += 500;
+        state.bonusAvailable = false;
+        const btn = document.getElementById('dailyBonusBtn');
+        btn.disabled = true;
+        btn.textContent = '✅ Daily Claimed';
+        playWinSound();
+        updateHUD();
+      } else if (state.coins < 50) {
+        state.coins += 300;
+        const btn = document.getElementById('dailyBonusBtn');
+        btn.disabled = true;
+        btn.textContent = '✅ Refill Claimed';
+        playWinSound();
+        updateHUD();
+      }
+    }
+
+    function claimQuest(id) {
+      const quest = state.quests.find(q => q.id === id);
+      if (quest && quest.progress >= quest.target && !quest.claimed) {
+        quest.claimed = true;
+        state.coins += quest.reward;
+        addXP(40);
+        playWinSound();
+        updateHUD();
+      }
+    }
+
+    function renderQuests() {
+      const container = document.getElementById('questsList');
+      container.innerHTML = state.quests.map(q => {
+        const pct = Math.min(100, (q.progress / q.target) * 100);
+        const ready = q.progress >= q.target && !q.claimed;
+        return `
+          <div class="quest-item">
+            <div class="quest-top">
+              <span>${q.title}</span>
+              <span style="color:var(--neon-gold);">+${q.reward} 🪙</span>
+            </div>
+            <div class="quest-desc">${q.desc} (${q.progress}/${q.target})</div>
+            <div class="quest-progress-bar">
+              <div class="quest-progress-fill" style="width:${pct}%"></div>
+            </div>
+            <button class="btn-claim ${q.claimed ? 'claimed' : ''}"
+              ${ready ? '' : 'disabled'}
+              onclick="claimQuest('${q.id}')">
+              ${q.claimed ? 'Completed' : (ready ? 'Claim Reward' : 'In Progress')}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderLeaderboard() {
+      const all = [
+        ...state.rivals.map(r => ({ ...r, isPlayer: false })),
+        { name: 'You (Player)', coins: Math.floor(state.coins), isPlayer: true }
+      ].sort((a, b) => b.coins - a.coins);
+
+      document.getElementById('leaderboardList').innerHTML = all.map((entry, idx) => `
+        <div class="lb-row ${entry.isPlayer ? 'player-row' : ''}">
+          <span>#${idx + 1} ${entry.name}</span>
+          <span style="color:var(--neon-gold);">${entry.coins.toLocaleString()} 🪙</span>
+        </div>
+      `).join('');
+    }
+
+    // ================= NAVIGATION & BET HELPERS =================
+    function switchTab(tabName, btnEl) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${tabName}`).classList.add('active');
+      playTone(440, 'sine', 0.06);
+    }
+
+    function adjustBet(inputId, factor) {
+      const input = document.getElementById(inputId);
+      const val = Math.max(10, Math.floor((Number(input.value) || 10) * factor));
+      input.value = Math.min(Math.max(10, Math.floor(state.coins)), val);
+    }
+
+    function setMaxBet(inputId) {
+      document.getElementById(inputId).value = Math.max(10, Math.floor(state.coins));
+    }
+
+    function validateBet(inputId, statusId) {
+      const bet = Math.floor(Number(document.getElementById(inputId).value));
+      const statusEl = document.getElementById(statusId);
+      if (!bet || bet < 10) {
+        statusEl.className = 'status-banner status-loss';
+        statusEl.textContent = 'Minimum bet is 10 Coins.';
+        return null;
+      }
+      if (bet > state.coins) {
+        statusEl.className = 'status-banner status-loss';
+        statusEl.textContent = 'Insufficient virtual Coins!';
+        return null;
+      }
+      return bet;
+    }
+
+    // ================= GAME 1: NEON SLOTS =================
+    const slotSymbols = [
+      { icon: '🍒', weight: 35, mult3: 3 },
+      { icon: '⚡', weight: 30, mult3: 5 },
+      { icon: '💎', weight: 22, mult3: 8 },
+      { icon: '7️⃣', weight: 13, mult3: 15 }
+    ];
+
+    function pickSymbol() {
+      const total = slotSymbols.reduce((s, item) => s + item.weight, 0);
+      let r = Math.random() * total;
+      for (const item of slotSymbols) {
+        if (r < item.weight) return item;
+        r -= item.weight;
+      }
+      return slotSymbols[0];
+    }
+
+    let isSpinning = false;
+    function playSlots() {
+      if (isSpinning) return;
+      const bet = validateBet('slotsBet', 'slotsStatus');
+      if (!bet) return;
+
+      isSpinning = true;
+      state.coins -= bet;
+      updateHUD();
+
+      const spinBtn = document.getElementById('spinBtn');
+      const statusEl = document.getElementById('slotsStatus');
+      spinBtn.disabled = true;
+      statusEl.className = 'status-banner';
+      statusEl.textContent = 'Spinning...';
+
+      const reels = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+      reels.forEach(r => r.classList.add('spinning'));
+
+      const interval = setInterval(() => {
+        reels.forEach(r => {
+          r.textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)].icon;
+        });
+        playTone(300 + Math.random() * 200, 'square', 0.04, 0.03);
+      }, 80);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        const results = [pickSymbol(), pickSymbol(), pickSymbol()];
+        reels.forEach((r, idx) => {
+          r.classList.remove('spinning');
+          r.textContent = results[idx].icon;
+        });
+
+        let payout = 0;
+        let msg = '';
+        if (results[0].icon === results[1].icon && results[1].icon === results[2].icon) {
+          payout = Math.floor(bet * results[0].mult3);
+          msg = `JACKPOT! Triple ${results[0].icon} — You won ${payout} Coins!`;
+        } else if (
+          results[0].icon === results[1].icon ||
+          results[1].icon === results[2].icon ||
+          results[0].icon === results[2].icon
+        ) {
+          payout = Math.floor(bet * 1.5);
+          msg = `Nice Pair! You won ${payout} Coins!`;
+        }
+
+        if (payout > 0) {
+          statusEl.className = 'status-banner status-win';
+          statusEl.textContent = msg;
+          recordRound({ bet, won: true, payout });
+        } else {
+          statusEl.className = 'status-banner status-loss';
+          statusEl.textContent = 'No match this spin. Try again!';
+          recordRound({ bet, won: false });
+        }
+
+        isSpinning = false;
+        spinBtn.disabled = false;
+      }, 950);
+    }
+
+    // ================= GAME 2: CYBER CRASH =================
+    let crashRunning = false;
+    let crashInterval = null;
+    let currentMult = 1.00;
+    let crashPoint = 1.00;
+    let activeCrashBet = 0;
+    const crashHistoryLog = [1.85, 3.42, 1.12, 5.10];
+
+    function renderCrashHistory() {
+      document.getElementById('crashHistory').innerHTML = crashHistoryLog.slice(0, 8).map(val => `
+        <span class="history-badge ${val >= 2 ? 'hist-high' : 'hist-low'}">${val.toFixed(2)}x</span>
+      `).join('');
+    }
+
+    function generateCrashPoint() {
+      // House edge ~4%, instant crash 4% of the time
+      if (Math.random() < 0.04) return 1.00;
+      const raw = 0.96 / (1 - Math.random());
+      return Math.min(50, Math.max(1.01, Number(raw.toFixed(2))));
+    }
+
+    function handleCrashAction() {
+      if (!crashRunning) {
+        startCrash();
+      } else {
+        cashoutCrash();
+      }
+    }
+
+    function startCrash() {
+      const bet = validateBet('crashBet', 'crashStatus');
+      if (!bet) return;
+
+      activeCrashBet = bet;
+      state.coins -= bet;
+      updateHUD();
+
+      crashRunning = true;
+      currentMult = 1.00;
+      crashPoint = generateCrashPoint();
+
+      const actionBtn = document.getElementById('crashActionBtn');
+      const multDisplay = document.getElementById('crashMultDisplay');
+      const statusEl = document.getElementById('crashStatus');
+      const rocket = document.getElementById('rocketIcon');
+
+      actionBtn.className = 'btn-danger';
+      actionBtn.textContent = `Cashout (${bet} 🪙)`;
+      multDisplay.className = 'crash-multiplier';
+      statusEl.className = 'status-banner';
+      statusEl.textContent = 'Rocket ascending... Cash out before overload!';
+      document.getElementById('crashSubtext').textContent = 'Telemetry Active';
+
+      const autoTarget = Math.max(1.1, Number(document.getElementById('autoCashout').value) || 2.0);
+
+      crashInterval = setInterval(() => {
+        currentMult = Number((currentMult + 0.02 * Math.pow(currentMult, 0.65)).toFixed(2));
+        multDisplay.textContent = `${currentMult.toFixed(2)}x`;
+        actionBtn.textContent = `Cashout (${Math.floor(activeCrashBet * currentMult)} 🪙)`;
+        rocket.style.transform = `translateY(-${Math.min(24, (currentMult - 1) * 6)}px)`;
+
+        if (currentMult >= autoTarget && currentMult < crashPoint) {
+          cashoutCrash();
+          return;
+        }
+
+        if (currentMult >= crashPoint) {
+          clearInterval(crashInterval);
+          crashRunning = false;
+          multDisplay.textContent = `${crashPoint.toFixed(2)}x`;
+          multDisplay.classList.add('crashed');
+          document.getElementById('crashSubtext').textContent = 'SYSTEM OVERLOAD!';
+          actionBtn.className = 'btn-primary';
+          actionBtn.textContent = 'Launch';
+          rocket.style.transform = 'translateY(0)';
+
+          crashHistoryLog.unshift(crashPoint);
+          renderCrashHistory();
+
+          statusEl.className = 'status-banner status-loss';
+          statusEl.textContent = `Crashed at ${crashPoint.toFixed(2)}x! You lost ${activeCrashBet} Coins.`;
+          recordRound({ bet: activeCrashBet, won: false });
+        }
+      }, 65);
+    }
+
+    function cashoutCrash() {
+      if (!crashRunning) return;
+      clearInterval(crashInterval);
+      crashRunning = false;
+
+      const payout = Math.floor(activeCrashBet * currentMult);
+      const actionBtn = document.getElementById('crashActionBtn');
+      const multDisplay = document.getElementById('crashMultDisplay');
+      const statusEl = document.getElementById('crashStatus');
+
+      multDisplay.classList.add('cashed');
+      document.getElementById('crashSubtext').textContent = `Ejected safely! (Crash was ${crashPoint.toFixed(2)}x)`;
+      actionBtn.className = 'btn-primary';
+      actionBtn.textContent = 'Launch';
+      document.getElementById('rocketIcon').style.transform = 'translateY(0)';
+
+      crashHistoryLog.unshift(crashPoint);
+      renderCrashHistory();
+
+      statusEl.className = 'status-banner status-win';
+      statusEl.textContent = `Cashed out at ${currentMult.toFixed(2)}x! You won ${payout} Coins!`;
+      recordRound({ bet: activeCrashBet, won: true, payout });
+    }
+
+    // ================= GAME 3: HIGH-LOW DECK =================
+    const suits = [
+      { sym: '♠', red: false },
+      { sym: '♣', red: false },
+      { sym: '♥', red: true },
+      { sym: '♦', red: true }
+    ];
+    const ranks = [
+      { label: '2', val: 2 }, { label: '3', val: 3 }, { label: '4', val: 4 },
+      { label: '5', val: 5 }, { label: '6', val: 6 }, { label: '7', val: 7 },
+      { label: '8', val: 8 }, { label: '9', val: 9 }, { label: '10', val: 10 },
+      { label: 'J', val: 11 }, { label: 'Q', val: 12 }, { label: 'K', val: 13 },
+      { label: 'A', val: 14 }
+    ];
+
+    let hiloActive = false;
+    let currentCard = null;
+    let hiloInitialBet = 0;
+    let hiloCurrentPot = 0;
+
+    function drawRandomCard() {
+      const r = ranks[Math.floor(Math.random() * ranks.length)];
+      const s = suits[Math.floor(Math.random() * suits.length)];
+      return { ...r, ...s };
+    }
+
+    function renderCard(card) {
+      const cardEl = document.getElementById('hiloCard');
+      cardEl.className = `playing-card ${card.red ? 'red' : ''}`;
+      document.getElementById('cardTop').textContent = `${card.label}${card.sym}`;
+      document.getElementById('cardCenter').textContent = card.sym;
+      document.getElementById('cardBottom').textContent = `${card.label}${card.sym}`;
+    }
+
+    function startHiLo() {
+      if (hiloActive) return;
+      const bet = validateBet('hiloBet', 'hiloStatus');
+      if (!bet) return;
+
+      state.coins -= bet;
+      updateHUD();
+
+      hiloActive = true;
+      hiloInitialBet = bet;
+      hiloCurrentPot = bet;
+      currentCard = drawRandomCard();
+      renderCard(currentCard);
+
+      document.getElementById('hiloPotDisplay').textContent = `${hiloCurrentPot} 🪙`;
+      document.getElementById('hiloStartBtn').disabled = true;
+      document.getElementById('btnHigher').disabled = false;
+      document.getElementById('btnLower').disabled = false;
+      document.getElementById('btnHiloCashout').disabled = true;
+
+      const statusEl = document.getElementById('hiloStatus');
+      statusEl.className = 'status-banner';
+      statusEl.textContent = `Current card is ${currentCard.label}${currentCard.sym}. Will the next card be Higher or Lower?`;
+      playTone(500, 'sine', 0.08);
+    }
+
+    function guessHiLo(direction) {
+      if (!hiloActive) return;
+      const nextCard = drawRandomCard();
+      const correct =
+        (direction === 'higher' && nextCard.val >= currentCard.val) ||
+        (direction === 'lower' && nextCard.val <= currentCard.val);
+
+      renderCard(nextCard);
+      const statusEl = document.getElementById('hiloStatus');
+
+      if (correct) {
+        currentCard = nextCard;
+        hiloCurrentPot = Math.floor(hiloCurrentPot * 1.35);
+        document.getElementById('hiloPotDisplay').textContent = `${hiloCurrentPot} 🪙`;
+        document.getElementById('btnHiloCashout').disabled = false;
+        statusEl.className = 'status-banner status-win';
+        statusEl.textContent = `Correct! Drew ${nextCard.label}${nextCard.sym}. Pot is now ${hiloCurrentPot} Coins!`;
+        playTone(620, 'triangle', 0.1);
+      } else {
+        hiloActive = false;
+        hiloCurrentPot = 0;
+        document.getElementById('hiloPotDisplay').textContent = `0 🪙`;
+        document.getElementById('hiloStartBtn').disabled = false;
+        document.getElementById('btnHigher').disabled = true;
+        document.getElementById('btnLower').disabled = true;
+        document.getElementById('btnHiloCashout').disabled = true;
+
+        statusEl.className = 'status-banner status-loss';
+        statusEl.textContent = `Busted! Drew ${nextCard.label}${nextCard.sym}. Better luck next hand!`;
+        recordRound({ bet: hiloInitialBet, won: false });
+      }
+    }
+
+    function cashoutHiLo() {
+      if (!hiloActive || hiloCurrentPot <= 0) return;
+      const payout = hiloCurrentPot;
+      hiloActive = false;
+      hiloCurrentPot = 0;
+
+      document.getElementById('hiloPotDisplay').textContent = `0 🪙`;
+      document.getElementById('hiloStartBtn').disabled = false;
+      document.getElementById('btnHigher').disabled = true;
+      document.getElementById('btnLower').disabled = true;
+      document.getElementById('btnHiloCashout').disabled = true;
+
+      const statusEl = document.getElementById('hiloStatus');
+      statusEl.className = 'status-banner status-win';
+      statusEl.textContent = `Cashed out ${payout} Coins from High-Low!`;
+      recordRound({ bet: hiloInitialBet, won: true, payout });
+    }
+
+    // Initialize UI
+    renderCrashHistory();
+    updateHUD();
+  </script>
+</body>
+</html>
